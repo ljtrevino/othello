@@ -212,51 +212,248 @@ public class Othello extends JPanel implements ActionListener, MouseListener, Mo
 		}
 
 public boolean isFlanking(){
-			boolean right=false;
-			boolean left=false;
-			boolean top=false;
-			boolean bottom=false;
-			boolean diagonaltopleft=false;
-			boolean diagonaltopright=false;
-			boolean diagonalbottomleft=false;
-			boolean diagonalbottomright=false;
 			
 			if(isBlack){
 			//check left and right for other non-adjacent black pieces
-			for(int r = row; r < 8; r++){
-				if(pieces[r][column].isBlack() && r!=row-1 && r!=row+1){
-					right=true;
-				}}
-			for(int r = row; r >= 0; r--){
-				if(pieces[r][column].isBlack() && r!=row-1 && r!=row+1){
-					left=true;
-			}}
+			
+			////not on left/right edge
+				if(row!=0 && row!=7){ 
+					for(int r = row+1; r < 8; r++){
+						if(pieces[r][column]==null){
+							break;
+						}
+						if(pieces[r][column].isBlack() && r!=row-1 && r!=row+1){
+							return true;}}
+					for(int r = row-1; r >= 0; r--){
+						if(pieces[r][column]==null){
+							break;
+						}
+						if(pieces[r][column].isBlack() && r!=row-1 && r!=row+1){
+							return true;}}}
+			////on right edge
+					if(row == 7){ 
+					for(int r = row-1; r >= 0; r--){
+						if(pieces[r][column]==null){
+							break;
+						}
+						if(pieces[r][column].isBlack()){
+							return true;}}}
+					
+			////on left edge
+					if(row==0){ for(int r = row+1; r < 8; r++){
+						if(pieces[r][column]==null){
+							break;
+						}
+						if(pieces[r][column].isBlack()){
+							return true;}}}
 				
 			//check top and bottom for other non-adjacent black pieces
-			for(int c = column; c < 8; c++){
+			if(column!=0 && column!=7){
+			for(int c = column+1; c < 8; c++){
+				if(pieces[row][c]==null){
+					break;
+				}
 					if(pieces[row][c].isBlack() && c!=column-1 && c!=column+1){
-						bottom=true;
+						return true;
 					}}
-			for(int c = column; c >= 0; c--){
+			for(int c = column-1; c >= 0; c--){
+				if(pieces[row][c]==null){
+					break;
+				}
 					if(pieces[row][c].isBlack() && c!=column-1 && c!=column+1){
-						top=true;
-				}}	
-			//check diagonaltopleft to diagonalbottomright for other non-adjacent black pieces
-					for(int r = 0; r < 8; r++){
-				    for (int c=0; c<8; c++){
-				    	//code here
-				    }}
-			//check diagonalbottomleft to diagonaltopright for other non-adjacent black pieces
-					for(int r = 0; r < 8; r++){
-				    for (int c=0; c<8; c++){
-				    	//code here
-				    }}	    
-				    
-				
+						return true;
+				}}}
+			////on bottom edge
+			if(column == 7){ 
+				for(int c = column-1; c >= 0; c--){
+					if(pieces[row][c]==null){
+						break;
+					}
+					if(pieces[row][c].isBlack()){
+						return true;
+				}}}
+			
+			////on top edge
+			if(column==0){ for(int c = column+1; c < 8; c++){
+				if(pieces[row][c]==null){
+					break;
+				}
+				if(pieces[row][c].isBlack()){
+					return true;
+				}}}
+			
+			
+			//check diagonaltopleft for other non-adjacent black pieces
+			int checkrow = row-1;
+			int checkcol = column-1;
+			if(pieces[checkrow][checkcol]!=null && !pieces[checkrow][checkcol].isBlack()){
+			while(checkrow>0 && checkrow<7 && checkcol>0 && checkcol<7){
+				if(pieces[checkrow][checkcol]==null){
+					break;
+				}
+				checkrow--; checkcol--;
+				if(pieces[checkrow][checkcol]!=null && pieces[checkrow][checkcol].isBlack()){
+					return true;
+				}}}	
+			//check diagonalbottomright for other non-adjacent black pieces
+			checkrow = row+1;
+			checkcol = column+1;
+			if(pieces[checkrow][checkcol]!=null &&!pieces[checkrow][checkcol].isBlack()){
+			while(checkrow>0 && checkrow<7 && checkcol>0 && checkcol<7){
+				if(pieces[checkrow][checkcol]==null){
+					break;
+				}
+				checkrow++; checkcol++;
+				if(pieces[checkrow][checkcol]!=null && pieces[checkrow][checkcol].isBlack() ){
+					return true;
+				}}}	 
+			//check diagonalbottomleft for other non-adjacent black pieces
+			checkrow = row+1;
+			checkcol = column-1;
+			if(pieces[checkrow][checkcol]!=null && !pieces[checkrow][checkcol].isBlack()){
+			while(checkrow>0 && checkrow<7 && checkcol>0 && checkcol<7){
+				if(pieces[checkrow][checkcol]==null){
+					break;
+				}
+				checkrow++; checkcol--;
+				if(pieces[checkrow][checkcol]!=null && pieces[checkrow][checkcol].isBlack()){
+					return true;
+				}}}	  
+			//check diagonaltopright for other non-adjacent black pieces 	    
+			checkrow = row-1;
+			checkcol = column+1;
+			if(pieces[checkrow][checkcol]!=null && !pieces[checkrow][checkcol].isBlack()){
+			while(checkrow>0 && checkrow<7 && checkcol>0 && checkcol<7){
+				if(pieces[checkrow][checkcol]==null){
+					break;
+				}
+				checkrow--; checkcol++;
+				if(pieces[checkrow][checkcol]!=null && pieces[checkrow][checkcol].isBlack()){
+					return true;
+				}}}	
+			return false;
 			}
+					if(!isBlack){
+			//check left and right for other non-adjacent black pieces
+			
+			////not on left/right edge
+				if(row!=0 && row!=7){ 
+					for(int r = row+1; r < 8; r++){
+						if(pieces[r][column]==null){
+							break;
+						}
+						if(!pieces[r][column].isBlack() && r!=row-1 && r!=row+1){
+							return true;}}
+					for(int r = row-1; r >= 0; r--){
+						if(pieces[r][column]==null){
+							break;
+						}
+						if(!pieces[r][column].isBlack() && r!=row-1 && r!=row+1){
+							return true;}}}
+			////on right edge
+					if(row == 7){ 
+					for(int r = row-1; r >= 0; r--){
+						if(pieces[r][column]==null){
+							break;
+						}
+						if(!pieces[r][column].isBlack()){
+							return true;}}}
+					
+			////on left edge
+					if(row==0){ for(int r = row+1; r < 8; r++){
+						if(pieces[r][column]==null){
+							break;
+						}
+						if(!pieces[r][column].isBlack()){
+							return true;}}}
+				
+			//check top and bottom for other non-adjacent black pieces
+			if(column!=0 && column!=7){
+			for(int c = column+1; c < 8; c++){
+				if(pieces[row][c]==null){
+					break;
+				}
+					if(!pieces[row][c].isBlack() && c!=column-1 && c!=column+1){
+						return true;
+					}}
+			for(int c = column-1; c >= 0; c--){
+				if(pieces[row][c]==null){
+					break;
+				}
+					if(!pieces[row][c].isBlack() && c!=column-1 && c!=column+1){
+						return true;
+				}}}
+			////on bottom edge
+			if(column == 7){ 
+				for(int c = column-1; c >= 0; c--){
+					if(pieces[row][c]==null){
+						break;
+					}
+					if(!pieces[row][c].isBlack()){
+						return true;
+				}}}
+			
+			////on top edge
+			if(column==0){ for(int c = column+1; c < 8; c++){
+				if(pieces[row][c]==null){
+					break;
+				}
+				if(!pieces[row][c].isBlack()){
+					return true;
+				}}}
 			
 			
-			return true;	
+			//check diagonaltopleft for other non-adjacent black pieces
+			int checkrow = row-1;
+			int checkcol = column-1;
+			if(pieces[checkrow][checkcol]!=null && pieces[checkrow][checkcol].isBlack()){
+			while(checkrow>0 && checkrow<7 && checkcol>0 && checkcol<7){
+				if(pieces[checkrow][checkcol]==null){
+					break;
+				}
+				checkrow--; checkcol--;
+				if(pieces[checkrow][checkcol]!=null && !pieces[checkrow][checkcol].isBlack()){
+					return true;
+				}}}	
+			//check diagonalbottomright for other non-adjacent black pieces
+			checkrow = row+1;
+			checkcol = column+1;
+			if(pieces[checkrow][checkcol]!=null && pieces[checkrow][checkcol].isBlack()){
+			while(checkrow>0 && checkrow<7 && checkcol>0 && checkcol<7){
+				if(pieces[checkrow][checkcol]==null){
+					break;
+				}
+				checkrow++; checkcol++;
+				if(pieces[checkrow][checkcol]!=null && !pieces[checkrow][checkcol].isBlack() ){
+					return true;
+				}}}	 
+			//check diagonalbottomleft for other non-adjacent black pieces
+			checkrow = row+1;
+			checkcol = column-1;
+			if(pieces[checkrow][checkcol]!=null && pieces[checkrow][checkcol].isBlack()){
+			while(checkrow>0 && checkrow<7 && checkcol>0 && checkcol<7){
+				if(pieces[checkrow][checkcol]==null){
+					break;
+				}
+				checkrow++; checkcol--;
+				if(pieces[checkrow][checkcol]!=null && !pieces[checkrow][checkcol].isBlack()){
+					return true;
+				}}}	  
+			//check diagonaltopright for other non-adjacent black pieces 	    
+			checkrow = row-1;
+			checkcol = column+1;
+			if(pieces[checkrow][checkcol]!=null && pieces[checkrow][checkcol].isBlack()){
+			while(checkrow>0 && checkrow<7 && checkcol>0 && checkcol<7){
+				if(pieces[checkrow][checkcol]==null){
+					break;
+				}
+				checkrow--; checkcol++;
+				if(pieces[checkrow][checkcol]!=null && !pieces[checkrow][checkcol].isBlack()){
+					return true;
+				}}}	
+			return false;
+			}
+			return false;
 		}
 
 		public void mouseReleased(MouseEvent e) {
@@ -279,7 +476,7 @@ public boolean isFlanking(){
 				boolean color = false;
 				if(turn % 2 == 0)
 					color = true;
-				if(pieces[row][column] == null){
+				if(pieces[row][column] == null && isFlanking()){ //////&& isFlanking()
 				pieces[row][column] = new OthelloPiece(getx(), gety(), color);
 				turn++;
 				}
