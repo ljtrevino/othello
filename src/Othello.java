@@ -1,5 +1,7 @@
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -7,12 +9,13 @@ import java.awt.*;
 import javax.swing.*;
 public class Othello extends JPanel implements ActionListener, MouseListener, MouseMotionListener{
 	private JButton newgame, setpiece;//For a button that says New Game to add later
-	private JTextField field1, field2;
+	private JTextField field1, field2, field3;
 	private JFrame frame;    
 	private int width;
 	private int height;
 	private OthelloPiece[][] pieces;
 	private int turn;
+	private boolean isBlack=true;
 	private boolean game = false;
 	private int row = 5, column = 7; //The row and column selected by the user
 	private String player1="", player2="";
@@ -51,28 +54,45 @@ public class Othello extends JPanel implements ActionListener, MouseListener, Mo
 	public static void main(String[] args){
 		new Othello();
 }
-	public void popupWindow(){
+		public void popupWindow(){
 		final JOptionPane popup = new JOptionPane("Player Name");
-		field1 = new JTextField(10);
-		field2 = new JTextField(10);
+		field1 = new JTextField();
+		field2 = new JTextField();
+		field3 = new JTextField();
+		field3.setEditable(false);
+		field1.addKeyListener(new KeyAdapter() {
+		    public void keyTyped(KeyEvent e) { 
+		        if (field1.getText().length() >= 10 ) // limit textfield to 10 characters
+		            e.consume(); 
+		    }  
+		});
+		field2 = new JTextField();
+		field2.addKeyListener(new KeyAdapter() {
+		    public void keyTyped(KeyEvent e) { 
+		        if (field2.getText().length() >= 10) // limit textfield to 10 characters
+		            e.consume(); 
+		    }  
+		});
+		field3.setText("The Default option is \"Black\" for Player 1 and \"White\" for Player 2");
 		Object[] messages = {
-				"Player 1:", field1, "Player 2:", field2
+				field3, "Player 1:", field1, "Player 2:", field2
 		};
 		popup.setPreferredSize(new Dimension(300, 200));
 		popup.setLocation(500, 500);
-		
 		int option = JOptionPane.showConfirmDialog(frame, messages, "Choose Names", JOptionPane.OK_CANCEL_OPTION);
 		if(option == JOptionPane.OK_OPTION){
-			if(!field1.getText().equals("") && !field2.getText().equals("")){
-			player1 = field1.getText();
-			player2 = field2.getText();
-			}
-		}
-		if(option == JOptionPane.CANCEL_OPTION){
+			if(field1.getText().equals(""))
+				player1 = "Black";
+			if(field2.getText().equals(""))
+				player2 = "White";
 			
+			if(!field1.getText().equals(""))
+				player1 = field1.getText();
+			if(!field2.getText().equals(""))
+				player2 = field2.getText();
 		}
-	}
-
+		}
+	
 	
 	public void paintComponent(Graphics g){
 		super.paintComponent(g);
@@ -97,18 +117,20 @@ public class Othello extends JPanel implements ActionListener, MouseListener, Mo
 			g.setFont(new Font("SansSerif", Font.BOLD, 25));
 			g.setColor(new Color(255,204,0));
 			g.drawString("Turn: " + turn, width/2-45, height/2-320); //Font Characteristics for "Turn: __"
-			
 			g.setFont(new Font("SansSerif", Font.BOLD, 40));
 			if(turn % 2 == 0 && player1.equals("")){}   
 			else if (turn % 2 == 1){
 				setBackground(new Color(135,206,250));
 				g.setColor(Color.WHITE);
 				g.drawString(player2+"'s Turn", width/2+(300+10+width/15), height/6);
+				isBlack=false;
 			} 									//center-(board+border+distance_from_board+text_length)
 			else{
 				setBackground(new Color(30,144,255));
 				g.setColor(Color.BLACK);
 				g.drawString(player1+"'s Turn", width/2-(300+10+width/15+230), height/6);
+				isBlack=true;
+
 			}
 			
 		}
@@ -188,6 +210,55 @@ public class Othello extends JPanel implements ActionListener, MouseListener, Mo
 			setRow(x); //FIX: leftmost row selected when left border clicked
 			repaint();
 		}
+
+public boolean isFlanking(){
+			boolean right=false;
+			boolean left=false;
+			boolean top=false;
+			boolean bottom=false;
+			boolean diagonaltopleft=false;
+			boolean diagonaltopright=false;
+			boolean diagonalbottomleft=false;
+			boolean diagonalbottomright=false;
+			
+			if(isBlack){
+			//check left and right for other non-adjacent black pieces
+			for(int r = row; r < 8; r++){
+				if(pieces[r][column].isBlack() && r!=row-1 && r!=row+1){
+					right=true;
+				}}
+			for(int r = row; r >= 0; r--){
+				if(pieces[r][column].isBlack() && r!=row-1 && r!=row+1){
+					left=true;
+			}}
+				
+			//check top and bottom for other non-adjacent black pieces
+			for(int c = column; c < 8; c++){
+					if(pieces[row][c].isBlack() && c!=column-1 && c!=column+1){
+						bottom=true;
+					}}
+			for(int c = column; c >= 0; c--){
+					if(pieces[row][c].isBlack() && c!=column-1 && c!=column+1){
+						top=true;
+				}}	
+			//check diagonaltopleft to diagonalbottomright for other non-adjacent black pieces
+					for(int r = 0; r < 8; r++){
+				    for (int c=0; c<8; c++){
+				    	//code here
+				    }}
+			//check diagonalbottomleft to diagonaltopright for other non-adjacent black pieces
+					for(int r = 0; r < 8; r++){
+				    for (int c=0; c<8; c++){
+				    	//code here
+				    }}	    
+				    
+				
+			}
+			
+			
+			return true;	
+		}
+
 		public void mouseReleased(MouseEvent e) {
 		}
 		public void mouseEntered(MouseEvent e) {
@@ -214,5 +285,3 @@ public class Othello extends JPanel implements ActionListener, MouseListener, Mo
 				}
 				repaint();
 			}}}}
-
-
