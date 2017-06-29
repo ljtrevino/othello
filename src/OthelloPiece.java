@@ -3,14 +3,20 @@ import java.awt.Graphics;
 import javax.swing.JPanel;
 
 
+import java.awt.Color;
+import java.awt.Graphics;
+import javax.swing.JPanel;
+
+
 public class OthelloPiece extends JPanel {
 private int posX, posY;
-private boolean isBlack, isSet;//Boolean value for later to tell us if the piece should be movable or not.
-	public OthelloPiece(int posX, int posY, boolean isBlack){
+private boolean isBlack;
+private boolean flipping;
+public OthelloPiece(int posX, int posY, boolean isBlack){
 	this.posX = posX;
 	this.posY = posY;
 	this.isBlack = isBlack;
-	isSet = false;
+	flipping = false;
 	}
 	public OthelloPiece(boolean isBlack){
 		this.isBlack = isBlack;
@@ -19,23 +25,42 @@ private boolean isBlack, isSet;//Boolean value for later to tell us if the piece
 		if(!isBlack){
 			g.setColor(Color.BLACK);
 			g.drawOval(posX + 1, posY + 1, 66, 66);
-			g.drawOval(posX - 1, posY - 1, 69, 69);
+			g.drawOval(posX - 1, posY - 1, 68, 68);
 			g.setColor(Color.WHITE);
-			g.fillOval(posX, posY, 68, 68);
+			g.fillOval(posX, posY, 67, 67);
 		}
-		else if(isBlack){
+		if(isBlack){
 			g.setColor(Color.WHITE);
 			g.drawOval(posX + 1, posY + 1, 66, 66);
 			g.drawOval(posX -1, posY - 1, 68, 68);
 			g.setColor(Color.BLACK);
 			g.fillOval(posX, posY, 67, 67);
 		}
-		else{
-			throw(new IllegalArgumentException("Color must be either white or black"));
+	}
+	public void drawPiece(Graphics g, int diameter, boolean horizontally){
+		if(!isBlack){
+			//g.setColor(Color.BLACK);
+			//g.drawOval(posX + 1, posY + 1, 66, 66);
+			//g.drawOval(posX - 1, posY - 1, 68, 68);
+			g.setColor(Color.WHITE);
+			g.fillOval(posX, posY, diameter, 68);
+		}
+		if(isBlack){
+			//g.setColor(Color.WHITE);
+			//g.drawOval(posX + 1, posY + 1, 66, 66);
+			//g.drawOval(posX -1, posY - 1, 68, 68);
+			g.setColor(Color.BLACK);
+			g.fillOval(posX, posY, diameter, 68);
 		}
 	}
 	public void setLocation(int x, int y){
 		posX = x;
+		posY = y;
+	}
+	public void setX(int x){
+		posX = x;
+	}
+	public void setY(int y){
 		posY = y;
 	}
 	public int getX(){
@@ -50,10 +75,10 @@ private boolean isBlack, isSet;//Boolean value for later to tell us if the piece
 	public boolean isBlack(){
 		return isBlack;
 	}
-	public boolean isSet(){
-		return isSet;
+	public boolean isFlipping(){
+		return flipping;
 	}
-	public void setIsSet(){
-		isSet = true;
+	public void setFlipping(boolean flip){
+		flipping = flip;
 	}
 }

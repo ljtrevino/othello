@@ -14,6 +14,10 @@ public class Othello extends JPanel implements ActionListener, MouseListener, Mo
 	private int width;
 	private int height;
 	private OthelloPiece[][] pieces;
+	private int diameter = 68;
+	private int time = 0;
+	private Timer t;
+	private OthelloPiece p;
 	private int turn;
 	private boolean isBlack=true;
 	private boolean game = false;
@@ -33,6 +37,7 @@ public class Othello extends JPanel implements ActionListener, MouseListener, Mo
 		setpiece = new JButton("Set Piece");
 		newgame.setPreferredSize(new Dimension(100, 50));
 		setpiece.setPreferredSize(new Dimension(100, 50));
+		t = new Timer(20, this);
 		JPanel panel = new JPanel();
 		panel.add(newgame);
 		panel.add(setpiece);
@@ -105,6 +110,13 @@ public class Othello extends JPanel implements ActionListener, MouseListener, Mo
 		g.drawRect(getx(), gety(), 68, 68 );
 		}
 		}
+public void flip(OthelloPiece piece, boolean horizontally){//A method to invoke a animation to flip pieces
+		Timer t = new Timer(20, this);
+		p = piece;
+		p.setFlipping(true);
+		t.start();
+	}
+
 		public int getx(){
 			int locX = width / 2 - 300 + row * 75 + 7;
 			return locX;
@@ -180,7 +192,10 @@ public class Othello extends JPanel implements ActionListener, MouseListener, Mo
 			pieces[4][4] = new OthelloPiece(width/2+5,height/2+5,false);
 		}
 		public void layoutBoard(Graphics g){//Draws all the pieces on the board
-			for(int i = 0; i < 8; i++){
+			if(p != null && p.isFlipping())
+				p.drawPiece(g, diameter, true);
+
+for(int i = 0; i < 8; i++){
 				for(int j = 0; j < 8; j++){
 					if(pieces[i][j] != null)
 						pieces[i][j].drawPiece(g);
@@ -219,13 +234,13 @@ public boolean isFlanking(){
 			////not on left/right edge
 				if(row!=0 && row!=7){ 
 					for(int r = row+1; r < 8; r++){
-						if(pieces[r][column]==null){
+						if(pieces[r][column]==null || pieces[row+1][column].isBlack()){
 							break;
 						}
 						if(pieces[r][column].isBlack() && r!=row-1 && r!=row+1){
 							return true;}}
 					for(int r = row-1; r >= 0; r--){
-						if(pieces[r][column]==null){
+						if(pieces[r][column]==null || pieces[row-1][column].isBlack()){
 							break;
 						}
 						if(pieces[r][column].isBlack() && r!=row-1 && r!=row+1){
@@ -233,7 +248,7 @@ public boolean isFlanking(){
 			////on right edge
 					if(row == 7){ 
 					for(int r = row-1; r >= 0; r--){
-						if(pieces[r][column]==null){
+						if(pieces[r][column]==null || pieces[row-1][column].isBlack()){
 							break;
 						}
 						if(pieces[r][column].isBlack()){
@@ -241,7 +256,7 @@ public boolean isFlanking(){
 					
 			////on left edge
 					if(row==0){ for(int r = row+1; r < 8; r++){
-						if(pieces[r][column]==null){
+						if(pieces[r][column]==null || pieces[row+1][column].isBlack()){
 							break;
 						}
 						if(pieces[r][column].isBlack()){
@@ -250,14 +265,14 @@ public boolean isFlanking(){
 			//check top and bottom for other non-adjacent black pieces
 			if(column!=0 && column!=7){
 			for(int c = column+1; c < 8; c++){
-				if(pieces[row][c]==null){
+				if(pieces[row][c]==null || pieces[row][column+1].isBlack()){
 					break;
 				}
 					if(pieces[row][c].isBlack() && c!=column-1 && c!=column+1){
 						return true;
 					}}
 			for(int c = column-1; c >= 0; c--){
-				if(pieces[row][c]==null){
+				if(pieces[row][c]==null || pieces[row][column-1].isBlack()){
 					break;
 				}
 					if(pieces[row][c].isBlack() && c!=column-1 && c!=column+1){
@@ -266,7 +281,7 @@ public boolean isFlanking(){
 			////on bottom edge
 			if(column == 7){ 
 				for(int c = column-1; c >= 0; c--){
-					if(pieces[row][c]==null){
+					if(pieces[row][c]==null || pieces[row][column-1].isBlack()){
 						break;
 					}
 					if(pieces[row][c].isBlack()){
@@ -275,7 +290,7 @@ public boolean isFlanking(){
 			
 			////on top edge
 			if(column==0){ for(int c = column+1; c < 8; c++){
-				if(pieces[row][c]==null){
+				if(pieces[row][c]==null || pieces[row][column+1].isBlack()){
 					break;
 				}
 				if(pieces[row][c].isBlack()){
@@ -286,7 +301,7 @@ public boolean isFlanking(){
 			//check diagonaltopleft for other non-adjacent black pieces
 			int checkrow = row-1;
 			int checkcol = column-1;
-			if(pieces[checkrow][checkcol]!=null && !pieces[checkrow][checkcol].isBlack()){
+			if(checkrow>0 && checkrow<7 && checkcol>0 && checkcol<7 &&pieces[checkrow][checkcol]!=null && !pieces[checkrow][checkcol].isBlack()){
 			while(checkrow>0 && checkrow<7 && checkcol>0 && checkcol<7){
 				if(pieces[checkrow][checkcol]==null){
 					break;
@@ -298,7 +313,7 @@ public boolean isFlanking(){
 			//check diagonalbottomright for other non-adjacent black pieces
 			checkrow = row+1;
 			checkcol = column+1;
-			if(pieces[checkrow][checkcol]!=null &&!pieces[checkrow][checkcol].isBlack()){
+			if(checkrow>0 && checkrow<7 && checkcol>0 && checkcol<7 &&pieces[checkrow][checkcol]!=null &&!pieces[checkrow][checkcol].isBlack()){
 			while(checkrow>0 && checkrow<7 && checkcol>0 && checkcol<7){
 				if(pieces[checkrow][checkcol]==null){
 					break;
@@ -310,7 +325,7 @@ public boolean isFlanking(){
 			//check diagonalbottomleft for other non-adjacent black pieces
 			checkrow = row+1;
 			checkcol = column-1;
-			if(pieces[checkrow][checkcol]!=null && !pieces[checkrow][checkcol].isBlack()){
+			if(checkrow>0 && checkrow<7 && checkcol>0 && checkcol<7 &&pieces[checkrow][checkcol]!=null && !pieces[checkrow][checkcol].isBlack()){
 			while(checkrow>0 && checkrow<7 && checkcol>0 && checkcol<7){
 				if(pieces[checkrow][checkcol]==null){
 					break;
@@ -322,7 +337,7 @@ public boolean isFlanking(){
 			//check diagonaltopright for other non-adjacent black pieces 	    
 			checkrow = row-1;
 			checkcol = column+1;
-			if(pieces[checkrow][checkcol]!=null && !pieces[checkrow][checkcol].isBlack()){
+			if(checkrow>0 && checkrow<7 && checkcol>0 && checkcol<7 && pieces[checkrow][checkcol]!=null && !pieces[checkrow][checkcol].isBlack()){
 			while(checkrow>0 && checkrow<7 && checkcol>0 && checkcol<7){
 				if(pieces[checkrow][checkcol]==null){
 					break;
@@ -339,13 +354,13 @@ public boolean isFlanking(){
 			////not on left/right edge
 				if(row!=0 && row!=7){ 
 					for(int r = row+1; r < 8; r++){
-						if(pieces[r][column]==null){
+						if(pieces[r][column]==null || !pieces[row+1][column].isBlack()){
 							break;
 						}
 						if(!pieces[r][column].isBlack() && r!=row-1 && r!=row+1){
 							return true;}}
 					for(int r = row-1; r >= 0; r--){
-						if(pieces[r][column]==null){
+						if(pieces[r][column]==null || !pieces[row-1][column].isBlack()){
 							break;
 						}
 						if(!pieces[r][column].isBlack() && r!=row-1 && r!=row+1){
@@ -353,7 +368,7 @@ public boolean isFlanking(){
 			////on right edge
 					if(row == 7){ 
 					for(int r = row-1; r >= 0; r--){
-						if(pieces[r][column]==null){
+						if(pieces[r][column]==null || !pieces[row-1][column].isBlack()){
 							break;
 						}
 						if(!pieces[r][column].isBlack()){
@@ -361,7 +376,7 @@ public boolean isFlanking(){
 					
 			////on left edge
 					if(row==0){ for(int r = row+1; r < 8; r++){
-						if(pieces[r][column]==null){
+						if(pieces[r][column]==null || !pieces[row+1][column].isBlack()){
 							break;
 						}
 						if(!pieces[r][column].isBlack()){
@@ -370,14 +385,14 @@ public boolean isFlanking(){
 			//check top and bottom for other non-adjacent black pieces
 			if(column!=0 && column!=7){
 			for(int c = column+1; c < 8; c++){
-				if(pieces[row][c]==null){
+				if(pieces[row][c]==null || !pieces[row][column+1].isBlack()){
 					break;
 				}
 					if(!pieces[row][c].isBlack() && c!=column-1 && c!=column+1){
 						return true;
 					}}
 			for(int c = column-1; c >= 0; c--){
-				if(pieces[row][c]==null){
+				if(pieces[row][c]==null || !pieces[row][column-1].isBlack()){
 					break;
 				}
 					if(!pieces[row][c].isBlack() && c!=column-1 && c!=column+1){
@@ -386,7 +401,7 @@ public boolean isFlanking(){
 			////on bottom edge
 			if(column == 7){ 
 				for(int c = column-1; c >= 0; c--){
-					if(pieces[row][c]==null){
+					if(pieces[row][c]==null || !pieces[row][column-1].isBlack()){
 						break;
 					}
 					if(!pieces[row][c].isBlack()){
@@ -395,7 +410,7 @@ public boolean isFlanking(){
 			
 			////on top edge
 			if(column==0){ for(int c = column+1; c < 8; c++){
-				if(pieces[row][c]==null){
+				if(pieces[row][c]==null || !pieces[row][column+1].isBlack()){
 					break;
 				}
 				if(!pieces[row][c].isBlack()){
@@ -406,7 +421,7 @@ public boolean isFlanking(){
 			//check diagonaltopleft for other non-adjacent black pieces
 			int checkrow = row-1;
 			int checkcol = column-1;
-			if(pieces[checkrow][checkcol]!=null && pieces[checkrow][checkcol].isBlack()){
+			if(checkrow>0 && checkrow<7 && checkcol>0 && checkcol<7 && pieces[checkrow][checkcol]!=null && pieces[checkrow][checkcol].isBlack()){
 			while(checkrow>0 && checkrow<7 && checkcol>0 && checkcol<7){
 				if(pieces[checkrow][checkcol]==null){
 					break;
@@ -418,7 +433,7 @@ public boolean isFlanking(){
 			//check diagonalbottomright for other non-adjacent black pieces
 			checkrow = row+1;
 			checkcol = column+1;
-			if(pieces[checkrow][checkcol]!=null && pieces[checkrow][checkcol].isBlack()){
+			if(checkrow>0 && checkrow<7 && checkcol>0 && checkcol<7 &&pieces[checkrow][checkcol]!=null && pieces[checkrow][checkcol].isBlack()){
 			while(checkrow>0 && checkrow<7 && checkcol>0 && checkcol<7){
 				if(pieces[checkrow][checkcol]==null){
 					break;
@@ -430,7 +445,7 @@ public boolean isFlanking(){
 			//check diagonalbottomleft for other non-adjacent black pieces
 			checkrow = row+1;
 			checkcol = column-1;
-			if(pieces[checkrow][checkcol]!=null && pieces[checkrow][checkcol].isBlack()){
+			if(checkrow>0 && checkrow<7 && checkcol>0 && checkcol<7 &&pieces[checkrow][checkcol]!=null && pieces[checkrow][checkcol].isBlack()){
 			while(checkrow>0 && checkrow<7 && checkcol>0 && checkcol<7){
 				if(pieces[checkrow][checkcol]==null){
 					break;
@@ -442,7 +457,7 @@ public boolean isFlanking(){
 			//check diagonaltopright for other non-adjacent black pieces 	    
 			checkrow = row-1;
 			checkcol = column+1;
-			if(pieces[checkrow][checkcol]!=null && pieces[checkrow][checkcol].isBlack()){
+			if(checkrow>0 && checkrow<7 && checkcol>0 && checkcol<7 &&pieces[checkrow][checkcol]!=null && pieces[checkrow][checkcol].isBlack()){
 			while(checkrow>0 && checkrow<7 && checkcol>0 && checkcol<7){
 				if(pieces[checkrow][checkcol]==null){
 					break;
@@ -455,6 +470,8 @@ public boolean isFlanking(){
 			}
 			return false;
 		}
+//END OF ISFLANKING()
+
 
 		public void mouseReleased(MouseEvent e) {
 		}
@@ -463,6 +480,27 @@ public boolean isFlanking(){
 		public void mouseExited(MouseEvent e) {
 		}
 		public void actionPerformed(ActionEvent e) {
+				if(e.getSource() == t){//Test Timer?
+				time += 20;
+				if(time <= 680){
+				p.setX(getX() + 1);
+				diameter -= 2;
+				repaint();
+				}
+				if(time > 680){
+				if(time == 700)
+				p.changeColor();
+				p.setX(getX() - 1);
+				diameter += 2;
+				repaint();
+				}
+				if(time == 1360){
+					t.stop();
+					time = 0;
+					p.setFlipping(false);
+				}
+			}
+
 			if(e.getSource() == newgame){
 				popupWindow();
 				turn = 0;
@@ -482,3 +520,5 @@ public boolean isFlanking(){
 				}
 				repaint();
 			}}}}
+
+
